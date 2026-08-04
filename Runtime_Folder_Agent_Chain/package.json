@@ -1,0 +1,10 @@
+{
+  "name": "runtime-folder-agent-chain",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Creates nested folders through a chain of runtime worker agents.",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  }
+}

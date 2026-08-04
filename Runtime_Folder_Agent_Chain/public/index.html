@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Runtime Folder Agents</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 680px; margin: 4rem auto; padding: 0 1rem; color: #1c2430; }
+    form { display: grid; gap: 1rem; padding: 1.5rem; border: 1px solid #d9dee7; border-radius: 12px; }
+    label { display: grid; gap: .35rem; font-weight: 600; }
+    input, button { font: inherit; padding: .65rem; border-radius: 7px; }
+    input { border: 1px solid #aeb8c7; }
+    button { border: 0; background: #1769e0; color: white; cursor: pointer; font-weight: 600; }
+    #result { white-space: pre-wrap; padding: 1rem; background: #f4f7fb; border-radius: 8px; min-height: 1.5rem; }
+  </style>
+</head>
+<body>
+  <h1>Runtime Folder Agent Chain</h1>
+  <p>Each agent owns one folder level, creates its files, dynamically creates the next agent when required, and then terminates.</p>
+  <form id="form">
+    <label>Nested folders (N, 1–100)<input id="n" type="number" min="1" max="100" value="3" required></label>
+    <label>Text files per folder (M, 0–100)<input id="m" type="number" min="0" max="100" value="2" required></label>
+    <button>Create structure</button>
+  </form>
+  <p id="result" aria-live="polite">Ready.</p>
+  <script>
+    const form = document.querySelector('#form');
+    const result = document.querySelector('#result');
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const button = form.querySelector('button'); button.disabled = true;
+      result.textContent = 'Starting the root agent…';
+      try {
+        const response = await fetch('/api/create', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ n: Number(n.value), m: Number(m.value) }) });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error);
+        result.textContent = `Successfully created a runtime agent chain with ${data.createdFolders} nested folders and ${data.filesPerFolder} files per folder.\nOutput: ${data.relativePath}\n\nGenerated Structure\n\n${data.structure.join('\n')}\n\nAgent Execution Log\n\n${data.logs.join('\n')}`;
+      } catch (error) { result.textContent = `Error: ${error.message}`; }
+      finally { button.disabled = false; }
+    });
+  </script>
+</body>
+</html>
